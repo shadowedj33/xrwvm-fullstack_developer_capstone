@@ -3,10 +3,10 @@
 # from django.shortcuts import render
 # from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404, render, redirect
+# from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import logout
-from django.contrib import messages
-from datetime import datetime
+# from django.contrib import messages
+# from datetime import datetime
 
 from django.http import JsonResponse
 from django.contrib.auth import login, authenticate
@@ -35,7 +35,9 @@ def login_user(request):
         user = authenticate(username=username, password=password)
     except Exception as e:
         logger.error("Error authenticating user: {}".format(e))
-        return JsonResponse({"status": 500, "message": "Internal Server Error"})
+        return JsonResponse(
+            {"status": 500, "message": "Internal Server Error"}
+        )
     data = {"userName": username}
     if user is not None:
         # If user is valid, call login method to login current user
@@ -50,7 +52,9 @@ def logout_request(request):
         logout(request)
     except Exception as e:
         logger.error("Error logging out user: {}".format(e))
-        return JsonResponse({"status": 500, "message": "Internal Server Error"})
+        return JsonResponse(
+            {"status": 500, "message": "Internal Server Error"}
+        )
     data = {"userName": ""}
     return JsonResponse(data)
 
@@ -77,22 +81,30 @@ def registration(request):
     if not username_exist:
         try:
             # Create user in auth_user table
-            user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name,password=password, email=email)
+            user = User.objects.create_user(
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                password=password,
+                email=email
+            )
             # Login the user and redirect to list page
             login(request, user)
-            data = {"userName": username,"status": "Authenticated"}
+            data = {"userName": username, "status": "Authenticated"}
             return JsonResponse(data)
         except Exception as e:
             logger.error("Error creating user: {}".format(e))
-            return JsonResponse({"status": 500, "message": "Internal Server Error"})
-    else :
-        data = {"userName": username,"error": "Already Registered"}
+            return JsonResponse(
+                {"status": 500, "message": "Internal Server Error"}
+            )
+    else:
+        data = {"userName": username, "error": "Already Registered"}
         return JsonResponse(data)
 
 def get_cars(request):
     try:
         count = CarMake.objects.filter().count()
-        if(count == 0): 
+        if(count == 0):
             initiate()
         car_models = CarModel.objects.select_related('car_make')
         cars = []
@@ -101,9 +113,12 @@ def get_cars(request):
         return JsonResponse({"CarModels": cars})
     except Exception as e:
         logger.error("Error getting cars: {}".format(e))
-        return JsonResponse({"status": 500, "message": "Internal Server Error"})
+        return JsonResponse(
+            {"status": 500, "message": "Internal Server Error"}
+        )
 
-#Update the `get_dealerships` render list of dealerships all by default, particular state if state is passed
+
+#Update the `get_dealerships` render list of dealerships all by default
 def get_dealerships(request, state = "All"):
     try:
         if(state == "All"):
@@ -114,7 +129,10 @@ def get_dealerships(request, state = "All"):
         return JsonResponse({"status": 200, "dealers": dealerships})
     except Exception as e:
         logger.error("Error getting dealerships: {}".format(e))
-        return JsonResponse({"status": 500, "message": "Internal Server Error"})
+        return JsonResponse(
+            {"status": 500, "message": "Internal Server Error"}
+        )
+
 
 def get_dealer_details(request, dealer_id):
     try:
@@ -126,7 +144,10 @@ def get_dealer_details(request, dealer_id):
             return JsonResponse({"status": 400, "message": "Bad Request"})
     except Exception as e:
         logger.error("Error getting dealer details: {}".format(e))
-        return JsonResponse({"status": 500, "message": "Internal Server Error"})
+        return JsonResponse(
+            {"status": 500, "message": "Internal Server Error"}
+        )
+
 
 def get_dealer_reviews(request, dealer_id):
     try:
@@ -142,11 +163,14 @@ def get_dealer_reviews(request, dealer_id):
             return JsonResponse({"status": 400, "message": "Bad Request"})
     except Exception as e:
         logger.error("Error getting dealer reviews: {}".format(e))
-        return JsonResponse({"status": 500, "message": "Internal Server Error"})
+        return JsonResponse(
+            {"status": 500, "message": "Internal Server Error"}
+        )
 
-def add_review(request): 
+
+def add_review(request):
     try:
-        if(request.user.is_anonymous == False): 
+        if(request.user.is_anonymous == False):
             data = json.loads(request.body)
             response = post_review(data)
             return JsonResponse({"status": 200})
@@ -154,4 +178,6 @@ def add_review(request):
             return JsonResponse({"status": 403, "message": "Unauthorized"})
     except Exception as e:
         logger.error("Error adding review: {}".format(e))
-        return JsonResponse({"status": 500, "message": "Internal Server Error"})
+        return JsonResponse(
+            {"status": 500, "message": "Internal Server Error"}
+        )
