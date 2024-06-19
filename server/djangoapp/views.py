@@ -101,15 +101,18 @@ def registration(request):
         data = {"userName": username, "error": "Already Registered"}
         return JsonResponse(data)
 
+
 def get_cars(request):
     try:
         count = CarMake.objects.filter().count()
-        if(count == 0):
+        if (count == 0):
             initiate()
         car_models = CarModel.objects.select_related('car_make')
         cars = []
-        for car_model in car_models: 
-            cars.append({"CarModel": car_model.name, "CarMake": car_model.car_make.name})
+        for car_model in car_models:
+            cars.append(
+                {"CarModel": car_model.name, "CarMake": car_model.car_make.name}
+            )
         return JsonResponse({"CarModels": cars})
     except Exception as e:
         logger.error("Error getting cars: {}".format(e))
@@ -118,10 +121,10 @@ def get_cars(request):
         )
 
 
-#Update the `get_dealerships` render list of dealerships all by default
-def get_dealerships(request, state = "All"):
+# Update the `get_dealerships` render list of dealerships all by default
+def get_dealerships(request, state="All"):
     try:
-        if(state == "All"):
+        if (state == "All"):
             endpoint = "/fetchDealers"
         else:
             endpoint = "/fetchDealers/"+state
@@ -136,11 +139,11 @@ def get_dealerships(request, state = "All"):
 
 def get_dealer_details(request, dealer_id):
     try:
-        if(dealer_id): 
+        if (dealer_id):
             endpoint = "/fetchDealer/"+str(dealer_id)
             dealership = get_request(endpoint)
             return JsonResponse({"status": 200, "dealer": dealership})
-        else: 
+        else:
             return JsonResponse({"status": 400, "message": "Bad Request"})
     except Exception as e:
         logger.error("Error getting dealer details: {}".format(e))
@@ -152,10 +155,10 @@ def get_dealer_details(request, dealer_id):
 def get_dealer_reviews(request, dealer_id):
     try:
         # if dealer id has been provided
-        if(dealer_id): 
+        if (dealer_id):
             endpoint = "/fetchReviews/dealer/"+str(dealer_id)
             reviews = get_request(endpoint)
-            for review_detail in reviews: 
+            for review_detail in reviews:
                 response = analyze_review_sentiments(review_detail['review'])
                 review_detail['sentiment'] = response['sentiment']
             return JsonResponse({"status": 200, "reviews": reviews})
@@ -170,7 +173,7 @@ def get_dealer_reviews(request, dealer_id):
 
 def add_review(request):
     try:
-        if(request.user.is_anonymous == False):
+        if (request.user.is_anonymous is False):
             data = json.loads(request.body)
             response = post_review(data)
             return JsonResponse({"status": 200})
