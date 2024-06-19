@@ -111,7 +111,10 @@ def get_cars(request):
         cars = []
         for car_model in car_models:
             cars.append(
-                {"CarModel": car_model.name, "CarMake": car_model.car_make.name}
+                {
+                    "CarModel": car_model.name,
+                    "CarMake": car_model.car_make.name
+                }
             )
         return JsonResponse({"CarModels": cars})
     except Exception as e:
@@ -175,7 +178,7 @@ def add_review(request):
     try:
         if (request.user.is_anonymous is False):
             data = json.loads(request.body)
-            response = post_review(data)
+            # response = post_review(data)
             return JsonResponse({"status": 200})
         else:
             return JsonResponse({"status": 403, "message": "Unauthorized"})
